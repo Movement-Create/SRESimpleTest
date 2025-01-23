@@ -1,0 +1,54 @@
+version: '3.9'
+services:
+  # prometheus:
+  #   image: prom/prometheus
+  #   container_name: prometheus
+  #   volumes:
+  #     - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+  #   networks:
+  #     - localprom
+  #   ports:
+  #     - 9090:9090
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    networks:
+      - localprom
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  # jaeger:
+  #   image: jaegertracing/all-in-one:latest
+  #   container_name: jaeger
+  #   networks:
+  #     - localprom
+  #   ports:
+  #     - 16686:16686 # Jaeger UI
+  #     - 6831:6831/udp # UDP port for the Jaeger agent
+  #     - 6832:6832/udp # UDP port for the Jaeger agent
+  #     - 5778:5778 # Configuration port
+  #     - 14268:14268 # HTTP port for reporting spans
+  #     - 14250:14250 # GRPC port for reporting spans
+  #     - 14269:14269 # HTTP port for sampling strategies
+  #     #- 9411:9411  Zipkin-compatible endpoint
+  
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - localprom
+
+
+networks:
+  localprom:
+    driver: bridge
+
+volumes:
+  grafana-data:
